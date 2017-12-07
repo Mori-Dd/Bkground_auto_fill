@@ -675,7 +675,7 @@ def youxiwangguo(url,ac,ps,newstitle,game,source,content):
         # keys.send_keys(content)
         input('提交完按回车确认进入下一家' + '\n')
     except TimeoutException:
-        return youxiwangguo(url,ac,ps,newstitle,game,source,content)
+        return driver.get('http://www.youxiwangguo.com/e/member/tg/')
 
 
 def choose_num():
