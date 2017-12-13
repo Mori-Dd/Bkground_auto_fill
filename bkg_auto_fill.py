@@ -620,6 +620,7 @@ def bk1syou(url,ac,ps,newstitle,game,source,content):
         return bk1syou(url,ac,ps,newstitle,game,source,content)
 def fahao(url,ac,ps,newstitle,game,source,content):
     try:
+        driver.set_page_load_timeout(60)  # 60秒
         newwindow = "window.open('" + url + "');"
         driver.execute_script(newwindow)
         handles = driver.window_handles
@@ -968,6 +969,39 @@ def youxichanye(url,ac,ps,newstitle,game,source,content):
         driver.execute_script(newwindow)
         handles = driver.window_handles
         driver.switch_to_window(handles[-1])
+        time.sleep(3)
+        work = True
+        while work == True:
+            if driver.current_url == url:
+                break
+        # input('请点击一下QQ登录后按回车'+'\n')
+        login = driver.find_element_by_xpath('//*[contains(@src, "static/image/common/qq_login.gif")]')
+        login.click()
+        time.sleep(1)
+        driver.switch_to_frame('ptlogin_iframe')
+        login = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#switcher_plogin')))
+        login.click()
+        act = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#u')))
+        act.clear()
+        act.send_keys(ac)
+        psd = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#p')))
+        psd.clear()
+        psd.send_keys(ps)
+        logins = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#login_button')))
+        logins.click()
+        time.sleep(1)
+        skip = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#messagetext > p.alert_btnleft > a')))
+        skip.click()
+        newtitle = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#subject')))
+        newtitle.send_keys(newstitle)
+        work = True
+        while work == True:
+            if driver.current_url == url:
+                break
+
         input('提交完按回车确认进入下一家' + '\n')
     except TimeoutException:
         return youxichanye(url,ac,ps,newstitle,game,source,content)
@@ -1059,6 +1093,7 @@ def bk8477(url,ac,ps,newstitle,game,source,content):
         return bk8477(url,ac,ps,newstitle,game,source,content)
 def gametanzi(url,ac,ps,newstitle,game,source,content):
     try:
+        driver.set_page_load_timeout(60)  # 60秒
         newwindow = "window.open('" + url + "');"
         driver.execute_script(newwindow)
         handles = driver.window_handles
@@ -1100,14 +1135,6 @@ def gametanzi(url,ac,ps,newstitle,game,source,content):
         driver.switch_to_frame('appiframe-7Portal')
         addnews = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div.wrap.J_check_wrap > ul > li:nth-child(2) > a')))
         addnews.click()
-        #关联游戏
-        gamess = driver.find_element_by_xpath('//*[@id="myform"]/div[2]/div/table/tbody/tr[1]/td/span/span/a')
-        gamess.click()
-        # games = driver.find_element_by_xpath('//*[@id="myform"]/div[2]/div/table/tbody/tr[1]/td/span/input[1]')
-        # games.send_keys(game)
-        time.sleep(1)
-        linkgame = driver.find_element_by_xpath('//*[@id="datagrid-row-r2-2-226"]/td[2]/div')
-        linkgame.click()
         # 关联栏目
         linkgame = wait.until(EC.element_to_be_clickable(
             (By.CSS_SELECTOR, '#myform > div.col-auto > div > table > tbody > tr:nth-child(2) > td > select > option:nth-child(1)')))
@@ -1124,6 +1151,15 @@ def gametanzi(url,ac,ps,newstitle,game,source,content):
         # 新闻内容
         keys = driver.find_element_by_name("post[post_excerpt]")
         keys.send_keys(content)
+        # 关联游戏
+        time.sleep(1)
+        gamess = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
+                                                            '#myform > div.col-auto > div > table > tbody > tr:nth-child(1) > td > span > input.textbox-text.validatebox-text.textbox-prompt')))
+        gamess.send_keys(game)
+        time.sleep(2)
+        linkgame = wait.until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, '#datagrid-row-r2-2-266 > td:nth-child(2) > div')))
+        linkgame.click()
         input('提交完按回车确认进入下一家' + '\n')
     except TimeoutException:
         return gametanzi(url,ac,ps,newstitle,game,source,content)
@@ -1230,6 +1266,7 @@ def bk77l(url, ac, ps, newstitle, game, source, content):
         return bk77l(url, ac, ps, newstitle, game, source, content)
 def bk07076(url, ac, ps, newstitle, game, source, content):
     try:
+        driver.set_page_load_timeout(60)  # 60秒
         newwindow = "window.open('" + url + "');"
         driver.execute_script(newwindow)
         handles = driver.window_handles
@@ -1387,7 +1424,7 @@ def yeyun(url, ac, ps, newstitle, game, source, content):
         #     (By.CSS_SELECTOR, 'body > div.tMsg > div:nth-child(2) > div > a.curr')))
         # kind.click()
 
-        input('提交完按回车确认进入下一家' + '\n')
+        input('手动填写内容，提交完按回车确认进入下一家' + '\n')
     except TimeoutException:
         return yeyun(url, ac, ps, newstitle, game, source, content)
 def mumayi(url, ac, ps, newstitle, game, source, content):
@@ -1396,7 +1433,36 @@ def mumayi(url, ac, ps, newstitle, game, source, content):
         driver.execute_script(newwindow)
         handles = driver.window_handles
         driver.switch_to_window(handles[-1])
-        print('请用QQ登录，自己填完内容')
+        work = True
+        while work == True:
+            if driver.current_url == url:
+                break
+        time.sleep(1)
+        login = driver.find_element_by_xpath('//*[contains(@src, "template/dean_phone_140801/deancss/common/qq_login.gif")]')
+        login.click()
+        time.sleep(1)
+        driver.switch_to_frame('ptlogin_iframe')
+        login = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#switcher_plogin')))
+        login.click()
+        act = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#u')))
+        act.clear()
+        act.send_keys(ac)
+        psd = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#p')))
+        psd.clear()
+        psd.send_keys(ps)
+        logins = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#login_button')))
+        logins.click()
+        skip = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#messagetext > p.alert_btnleft > a')))
+        skip.click()
+        time.sleep(1)
+        work = True
+        while work == True:
+            if driver.current_url == url:
+                break
+        newtitle = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'#subject')))
+        newtitle.send_keys(newstitle)
         input('提交完按回车确认进入下一家' + '\n')
     except TimeoutException:
         return mumayi(url, ac, ps, newstitle, game, source, content)
@@ -1500,6 +1566,7 @@ def juxia(url, ac, ps, newstitle, game, source, content):
         return juxia(url, ac, ps, newstitle, game, source, content)
 def bk984g(url, ac, ps, newstitle, game, source, content):
     try:
+        driver.set_page_load_timeout(60)  # 60秒
         newwindow = "window.open('" + url + "');"
         driver.execute_script(newwindow)
         handles = driver.window_handles
@@ -1746,11 +1813,10 @@ def bk87g(url, ac, ps, newstitle, game, source, content):
         while work == True:
             if driver.current_url == 'http://cp.87g.com/index.php?m=cp&c=company':
                 break
-        # 跳过
-        addnews = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#sy_box > div:nth-child(2) > a')))
-        addnews.click()
-        input('如果有视频请关闭视频再按回车，无的话直接按回车'+'\n')
+        # addnews = wait.until(EC.element_to_be_clickable(
+        #     (By.CSS_SELECTOR, '#sy_box > div:nth-child(2) > a')))
+        # addnews.click()
+        input('手动点击发布稿件，如果有视频请关闭视频再按回车，无的话直接按回车'+'\n')
         driver.switch_to_frame('test')
         # 新闻标题
         title = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#title')))
@@ -1889,15 +1955,6 @@ def doyo(url, ac, ps, newstitle, game, source, content):
         # 选择内容
         kindgame = driver.find_element_by_xpath("/html/body/div[4]/div[3]/form/div/div[1]/span[8]/input[1]")
         kindgame.click()
-        # 关联游戏
-        choosegame = driver.find_element_by_id("select_game")
-        choosegame.click()
-        time.sleep(2)
-        game = driver.find_element_by_name('game_keyword')
-        game.send_keys('弹弹堂')
-        time.sleep(2)
-        chooses = driver.find_element_by_xpath('//*[@id="game_list_select"]/span[7]')
-        chooses.click()
         # 厂商
         sources = driver.find_element_by_name("source")
         sources.send_keys(source)
@@ -1907,6 +1964,15 @@ def doyo(url, ac, ps, newstitle, game, source, content):
         # 新闻内容
         keys = driver.find_element_by_name("summary")
         keys.send_keys(content)
+        # 关联游戏
+        choosegame = driver.find_element_by_id("select_game")
+        choosegame.click()
+        time.sleep(1)
+        game = driver.find_element_by_name('game_keyword')
+        game.send_keys('弹弹堂')
+        time.sleep(3)
+        chooses = driver.find_element_by_xpath('//*[@id="game_list_select"]/span[7]')
+        chooses.click()
         input('提交完按回车确认进入下一家' + '\n')
     except TimeoutException:
         return doyo(url, ac, ps, newstitle, game, source, content)
@@ -2031,12 +2097,12 @@ def bbsgqq(url, ac, ps, newstitle, game, source, content):
         act.send_keys(ac)
         psd.send_keys(ps)
         login.click()
+        time.sleep(2)
+        driver.switch_to_default_content()
         time.sleep(1)
-        print('1')
         publish = wait.until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, '#newTopicBtn')))
         publish.click()
-        print('2')
         # 新闻标题
         title = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#newTopicTitle')))
         title.clear()
@@ -2154,7 +2220,8 @@ def woyoo(url, ac, ps, newstitle, game, source, content):
 
 def choose_num():
     print('*************** 欢迎进入媒体后台自助系统 ***************')
-    print('—————  1. 手游特殊媒体  —————'+'\n'+'—————  2. 手游部分媒体  —————'+'\n'+'—————  3. 页游媒体  —————')
+    print('—————  1. 手游特殊媒体  —————'+'\n'+'—————  2. 手游部分媒体  —————'+'\n'
+          +'—————  3. 页游媒体  —————'+'\n'+'—————  4. 退出  —————')
     print('请选择要操作的媒体类型：')
     work = True
     while work == True:
@@ -2168,27 +2235,40 @@ def choose_num():
         elif num == '3':
             work = False
             return 3
+        elif num == '4':
+            work = False
+            return 4
         else:
             print('请输入正确的选项')
             work = True
 
 def main():
     newstitle, game, source, content = news_content()
-    num = choose_num()
+    work = True
+    while work == True:
+        num = choose_num()
+        if num == 1:
+            print('进入手游特殊媒体...')
+            for item in read_special_excel():
+                get_page(item['title'],item['url'],item['account'],item['password'],newstitle,game,source,content)
+            input('全部后台操作完毕，请按回车重新选择'+'\n')
+            continue
+        elif num == 2:
+            print('进入手游部分媒体...')
+            for item in read_part_excel():
+                get_page(item['title'], item['url'], item['account'], item['password'], newstitle, game, source, content)
+                input('全部后台操作完毕，请按回车重新选择' + '\n')
+                continue
+        elif num == 3:
+            print('3还没有写好')
+            input('全部后台操作完毕，请按回车重新选择' + '\n')
+            continue
+        elif num == 4:
+            print('正在退出程序')
+            time.sleep(2)
+            exit()
+            continue
 
-    if num == 1:
-        print('进入手游特殊媒体...')
-        for item in read_special_excel():
-            get_page(item['title'],item['url'],item['account'],item['password'],newstitle,game,source,content)
-        input('全部后台操作完毕，请关闭本程序'+'\n')
-    elif num == 2:
-        print('进入手游部分媒体...')
-        for item in read_part_excel():
-            get_page(item['title'], item['url'], item['account'], item['password'], newstitle, game, source, content)
-        input('全部后台操作完毕，请关闭本程序' + '\n')
-    elif num == 3:
-        print('3还没有写好')
-        input('全部后台操作完毕，请关闭本程序' + '\n')
 
 # if __name__ == '__main__':
 #     main()
