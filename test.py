@@ -6,11 +6,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import UnexpectedAlertPresentException
 import xlrd
 import time
+import traceback
 driver = webdriver.Chrome()
 driver.set_page_load_timeout(60) #60秒
 #浏览器最大化
 driver.maximize_window()
-wait = WebDriverWait(driver, 20)
+wait = WebDriverWait(driver, 60)
 def news_content():
     data = xlrd.open_workbook('账号密码.xlsx')
     content_table = data.sheet_by_name('手游新闻内容')
@@ -337,9 +338,6 @@ def hao76(dict,title,url,ac,ps,newstitle,game,source,content):
         while True:
             if driver.current_url == 'http://cp.hao76.com/index.php?m=cp&c=index&a=add':
                 break
-        # time.sleep(3)
-        # addnews = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'body > div.content > div.page-header > div > div > a:nth-child(2)')))
-        # addnews.click()
         #新闻标题
         titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'#name')))
         titles.send_keys(newstitle)
@@ -397,7 +395,8 @@ def huang17(dict,title,url,ac,ps,newstitle,game,source,content):
                     psd.clear()
                     act.send_keys(ac)
                     psd.send_keys(ps)
-                    wait.until(EC.element_to_be_clickable(
+                    wait1 = WebDriverWait(driver, 6000)
+                    wait1.until(EC.element_to_be_clickable(
                         (By.CSS_SELECTOR, 'body > center > div > div:nth-child(2) > a'))).click()
                     time.sleep(1)
                     break
@@ -545,16 +544,20 @@ def thisisgame(dict,title,url,ac,ps,newstitle,game,source,content):
 
         skit = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > table > tbody > tr:nth-child(2) > td > div > a')))
         skit.click()
-
-        addnews = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#sy_box > div:nth-child(2) > a')))
-        addnews.click()
-        #选择新闻栏目
-        choose = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#changeclass > div > select > option:nth-child(2)')))
-        choose.click()
-        sure = wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, '#changeclass > button')))
-        sure.click()
-
+        driver.get('http://www.thisisgame.com.cn/e/DoInfo/AddInfo.php?mid=1&enews=MAddInfo&classid=8')
+        handle = driver.current_window_handle
+        driver.switch_to_window(handle)
+        while True:
+            if driver.current_url == 'http://www.thisisgame.com.cn/e/DoInfo/AddInfo.php?mid=1&enews=MAddInfo&classid=8':
+                break
+        # addnews = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#sy_box > div:nth-child(2) > a')))
+        # addnews.click()
+        # #选择新闻栏目
+        # choose = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#changeclass > div > select > option:nth-child(2)')))
+        # choose.click()
+        # sure = wait.until(
+        #     EC.element_to_be_clickable((By.CSS_SELECTOR, '#changeclass > button')))
+        # sure.click()
         #新闻标题
         titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'#main > div.main_box > div.right > form > div > div.manage_box > div:nth-child(1) > input[type="text"]')))
         titles.send_keys(newstitle)
@@ -870,49 +873,6 @@ def bk40407(dict,title,url,ac,ps,newstitle,game,source,content):
     except Exception:
         print(title + '出问题了，请记得回来手动操作')
         return None
-def bk4q5q(dict,title,url,ac,ps,newstitle,game,source,content):
-    try:
-        driver.switch_to_window(dict[title])
-
-        act = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#username')))
-        act.clear()
-        psd = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#password')))
-        psd.clear()
-        act.send_keys(ac)
-        psd.send_keys(ps)
-        while True:
-            if driver.current_url == 'http://admin.4q5q.com/company/index.html':
-                break
-        driver.get('http://admin.4q5q.com/company/newsAdd.html')
-        while True:
-            if driver.current_url == 'http://admin.4q5q.com/company/newsAdd.html':
-                break
-        # 新闻标题
-        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#artiletitle')))
-        titles.send_keys(newstitle)
-        #选择游戏类别
-        choosegame = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#content > div > div > div.t_middle > div:nth-child(3) > div:nth-child(1) > select > option:nth-child(4)')))
-        choosegame.click()
-        # #选择游戏名
-        # gamename = wait.until(EC.element_to_be_clickable(
-        #     (By.CSS_SELECTOR, '#ddlgameName_chzn > a > span')))
-        # gamename.click()
-        # name = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#ddlgameName_chzn > div > div > input[type="text"]')))
-        # name.clear()
-        # name.send_keys(game)
-        # time.sleep(1)
-        # sure = driver.find_element_by_xpath('//*[@id="ddlgameName_chzn_o_259"]')
-        # sure.click()
-        # 新闻内容
-        keys = driver.find_element_by_name("Zhaiyao")
-        keys.send_keys(content)
-        # input('提交完按回车确认进入下一家' + '\n')
-    except Exception:
-        print(title + '出问题了，请记得回来手动操作')
-        return None
 def twan(dict,title,url,ac,ps,newstitle,game,source,content):
     try:
         driver.switch_to_window(dict[title])
@@ -1047,154 +1007,6 @@ def gameres(dict,title,url,ac,ps,newstitle,game,source,content):
     except Exception:
         print(title + '出问题了，请记得回来手动操作')
         return None
-def bk8477(dict,title,url,ac,ps,newstitle,game,source,content):
-    try:
-        driver.switch_to_window(dict[title])
-
-        work = True
-        s = driver.find_elements_by_css_selector('body > div.content > form > div.form-actions > label > button')
-        while len(s) != 0 and work == True:
-            if 'http://119.23.135.10/index.php?m=admin&c=index&pc_hash' not in driver.current_url:
-                while len(s) != 0:
-                    act = wait.until(EC.presence_of_element_located(
-                        (By.CSS_SELECTOR, 'body > div.content > form > div:nth-child(3) > div > input')))
-                    act.clear()
-                    psd = wait.until(EC.presence_of_element_located(
-                        (By.CSS_SELECTOR, 'body > div.content > form > div:nth-child(4) > div > input')))
-                    psd.clear()
-                    act.send_keys(ac)
-                    psd.send_keys(ps)
-                    wait.until(EC.element_to_be_clickable(
-                        (By.CSS_SELECTOR, 'body > div > div.bottom > a'))).click()
-                    time.sleep(1)
-                    break
-            else:
-                break
-        while True:
-            if 'http://119.23.135.10/index.php?m=admin&c=index&pc_hash' in driver.current_url:
-                break
-        # 内容
-        con = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#_M4 > a')))
-        con.click()
-        #管理内容
-        massge = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#_MP822 > a')))
-        massge.click()
-        driver.switch_to_frame('center_frame')
-        #游戏攻略
-        time.sleep(1)
-        gong = driver.find_element_by_xpath('//*[@id="2"]/span/a[2]')
-        gong.click()
-        driver.switch_to.parent_frame()
-        driver.switch_to_frame('rightMain')
-        addnews = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, 'body > div.pad-10 > div.content-menu.ib-a.blue.line-x > a.add.fb > em')))
-        addnews.click()
-        handles = driver.window_handles
-        driver.switch_to_window(handles[-1])
-        # 新闻标题
-        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#title')))
-        titles.send_keys(newstitle)
-        # 新闻关键字
-        keys = driver.find_element_by_name("info[keywords]")
-        keys.send_keys(game)
-        # 新闻来源
-        keys = driver.find_element_by_name("info[copyfrom]")
-        keys.send_keys(source)
-        # 新闻内容
-        keys = driver.find_element_by_name("info[description]")
-        keys.send_keys(content)
-        # input('提交完按回车确认进入下一家' + '\n')
-    except Exception:
-        print(title + '出问题了，请记得回来手动操作')
-        return None
-def gametanzi(dict,title,url,ac,ps,newstitle,game,source,content):
-    try:
-        driver.switch_to_window(dict[title])
-
-        driver.set_page_load_timeout(60)  # 60秒
-        act = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#J_admin_name')))
-        act.clear()
-        psd = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#admin_pwd')))
-        psd.clear()
-        login = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#login_btn_wraper > button')))
-        act.send_keys(ac)
-        psd.send_keys(ps)
-        while True:
-            if driver.current_url == 'http://www.gametanzi.com/Admin/Index/index.html':
-                break
-        contentnews = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#nav_wraper > ul > li:nth-child(4) > a > span.menu-text.normal')))
-        contentnews.click()
-        publish = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#nav_wraper > ul > li.open > ul > li > a > span')))
-        publish.click()
-        work = True
-        while work == True:
-            if '正在加载' not in driver.find_element_by_xpath('//*[@id="loading"]/span').text:
-                break
-        driver.switch_to_frame('appiframe-7Portal')
-        addnews = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div.wrap.J_check_wrap > ul > li:nth-child(2) > a')))
-        addnews.click()
-        # 关联栏目
-        linkgame = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#myform > div.col-auto > div > table > tbody > tr:nth-child(2) > td > select > option:nth-child(1)')))
-        linkgame.click()
-        # 新闻标题
-        titles = driver.find_element_by_name('post[post_title]')
-        titles.send_keys(newstitle)
-        # 新闻关键词
-        keys = driver.find_element_by_name('post[post_keywords]')
-        keys.send_keys(game)
-        # 新闻来源
-        gamesoure = driver.find_element_by_name("post[post_source]")
-        gamesoure.send_keys(source)
-        # 新闻内容
-        keys = driver.find_element_by_name("post[post_excerpt]")
-        keys.send_keys(content)
-        # # 关联游戏
-        # time.sleep(1)
-        # gamess = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
-        #                                                     '#myform > div.col-auto > div > table > tbody > tr:nth-child(1) > td > span > input.textbox-text.validatebox-text.textbox-prompt')))
-        # gamess.send_keys(game)
-        # time.sleep(2)
-        # linkgame = wait.until(
-        #     EC.element_to_be_clickable((By.CSS_SELECTOR, '#datagrid-row-r2-2-266 > td:nth-child(2) > div')))
-        # linkgame.click()
-        # input('提交完按回车确认进入下一家' + '\n')
-    except Exception:
-        print(title + '出问题了，请记得回来手动操作')
-        return None
-def bk1g31(dict,title,url, ac, ps, newstitle, game, source, content):
-    try:
-        driver.switch_to_window(dict[title])
-
-        act = driver.find_element_by_name('username')
-        psd = driver.find_element_by_name('password')
-        act.send_keys(ac)
-        psd.send_keys(ps)
-        while True:
-            if driver.current_url == 'http://bbs.1g31.com/':
-                break
-        js = 'window.open("http://bbs.1g31.com/forum.php?mod=post&action=newthread&fid=56");'
-        driver.execute_script(js)
-        handles = driver.window_handles
-        driver.switch_to_window(handles[-1])
-        # 新闻标题
-        titles = driver.find_element_by_name('subject')
-        titles.send_keys(newstitle)
-        #选择新闻类别
-        addnews = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#postbox > div.pbt.cl > div.ftid')))
-        addnews.click()
-        addnew = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#typeid_ctrl_menu > ul > li:nth-child(2)')))
-        addnew.click()
-        # input('提交完按回车确认进入下一家' + '\n')
-    except Exception:
-        print(title + '出问题了，请记得回来手动操作')
-        return None
 def bk77l(dict,title,url, ac, ps, newstitle, game, source, content):
     try:
         driver.switch_to_window(dict[title])
@@ -1288,48 +1100,6 @@ def bk07076(dict,title,url, ac, ps, newstitle, game, source, content):
         # 新闻内容
         keys = driver.find_element_by_name("des")
         keys.send_keys(content)
-        # input('提交完按回车确认进入下一家' + '\n')
-    except Exception:
-        print(title + '出问题了，请记得回来手动操作')
-        return None
-def vshouyou(dict,title,url, ac, ps, newstitle, game, source, content):
-    try:
-        driver.switch_to_window(dict[title])
-
-        act = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#username')))
-        act.clear()
-        psd = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#userpwd')))
-        psd.clear()
-        act.send_keys(ac)
-        psd.send_keys(ps)
-        while True:
-            try:
-                if EC.alert_is_present()(driver):
-                    driver.switch_to_alert().accept()
-                    continue
-                elif driver.current_url == 'http://www.vshouyou.com/':
-                    break
-            except UnexpectedAlertPresentException:
-                continue
-
-        addnews = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#topUserBox > span > a:nth-child(3)')))
-        addnews.click()
-        # 新闻标题
-        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#theme')))
-        titles.send_keys(newstitle)
-        #新闻栏目
-        news = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#typeStr > option:nth-child(3)')))
-        news.click()
-        # 新闻关键词
-        keys = driver.find_element_by_name("themeKey")
-        keys.send_keys(game)
-        # 新闻内容
-        newcontent = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#contentKey')))
-        newcontent.send_keys(content)
         # input('提交完按回车确认进入下一家' + '\n')
     except Exception:
         print(title + '出问题了，请记得回来手动操作')
@@ -1443,94 +1213,6 @@ def mumayi(dict,title,url, ac, ps, newstitle, game, source, content):
     except Exception:
         print(title + '出问题了，请记得回来手动操作')
         return None
-def bk3987(dict,title,url, ac, ps, newstitle, game, source, content):
-    try:
-        driver.switch_to_window(dict[title])
-
-        act = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#phone')))
-        act.clear()
-        psd = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#password')))
-        psd.clear()
-        act.send_keys(ac)
-        psd.send_keys(ps)
-        while True:
-            if driver.current_url == 'https://open.3987.com/':
-                break
-        addnews = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, 'body > div.banner > div > div > a.wztj')))
-        addnews.click()
-        while True:
-            if driver.current_url == 'https://open.3987.com/article.html':
-                break
-        addnew = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, 'body > div.main.clearfix > div > div > div.m-1000.fr > div.sub_soft > div.soft_tit > a')))
-        addnew.click()
-        while True:
-            if driver.current_url == 'https://open.3987.com/fabu.html':
-                break
-        #选择动态
-        activit = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'body > div.main.clearfix > div > div > div.m-1000.fr > div.fb_soft > div.soft_gui > ul > li:nth-child(1) > div > input[type="text"]:nth-child(1)')))
-        activit.click()
-        activity = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div.main.clearfix > div > div > div.m-1000.fr > div.fb_soft > div.soft_gui > ul > li:nth-child(1) > div > ul > li:nth-child(1)')))
-        activity.click()
-        # 新闻标题
-        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body > div.main.clearfix > div > div > div.m-1000.fr > div.fb_soft > div.soft_gui > ul > li:nth-child(3) > input')))
-        titles.send_keys(newstitle)
-        # input('提交完按回车确认进入下一家' + '\n')
-    except Exception:
-        print(title + '出问题了，请记得回来手动操作')
-        return None
-def juxia(dict,title,url, ac, ps, newstitle, game, source, content):
-    try:
-        driver.switch_to_window(dict[title])
-
-        act = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#username')))
-        act.clear()
-        psd = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#password')))
-        psd.clear()
-        act.send_keys(ac)
-        psd.send_keys(ps)
-        work = True
-        s = driver.find_elements_by_css_selector('body > div.mainbody > div > form > dl > dd.tc > input')
-        while len(s) != 0 and work == True:
-            if driver.current_url != 'https://i.juxia.com/':
-                while len(s) != 0:
-                    act = wait.until(EC.presence_of_element_located(
-                        (By.CSS_SELECTOR, '#username')))
-                    act.clear()
-                    psd = wait.until(EC.presence_of_element_located(
-                        (By.CSS_SELECTOR, '#password')))
-                    psd.clear()
-                    act.send_keys(ac)
-                    psd.send_keys(ps)
-                    wait.until(EC.element_to_be_clickable(
-                        (By.CSS_SELECTOR, '#href'))).click()
-                    time.sleep(1)
-                    break
-            else:
-                break
-            time.sleep(1)
-        addnews = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, 'body > div.mainbody > div.topnav > div > a:nth-child(6)')))
-        addnews.click()
-        #投放平台
-        addnew = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#formid > div > div.contribute > div:nth-child(1) > div:nth-child(1) > div > a:nth-child(3)')))
-        addnew.click()
-        # 新闻标题
-        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#title')))
-        titles.send_keys(newstitle)
-        # 新闻关键字
-        keys = driver.find_element_by_name("keyword")
-        keys.send_keys(game)
-        # input('提交完按回车确认进入下一家' + '\n')
-    except Exception:
-        print(title + '出问题了，请记得回来手动操作')
-        return None
 def bk984g(dict,title,url, ac, ps, newstitle, game, source, content):
     try:
         driver.switch_to_window(dict[title])
@@ -1547,15 +1229,22 @@ def bk984g(dict,title,url, ac, ps, newstitle, game, source, content):
         psd.send_keys(ps)
         login.click()
 
-        addnews = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#sidebar-left > div > ul > li:nth-child(1) > a > span')))
-        addnews.click()
-        addnew = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#sidebar-left > div > ul > li:nth-child(1) > ul > li:nth-child(1) > a > span')))
-        addnew.click()
-        publish = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, '#content > div > div > div.box-content > div:nth-child(1) > div.span1 > a')))
-        publish.click()
+        driver.get('http://tg.984g.com/article/add/')
+        handle = driver.current_window_handle
+        driver.switch_to_window(handle)
+
+        while True:
+            if driver.current_url == 'http://tg.984g.com/article/add/':
+                break
+        # addnews = wait.until(EC.element_to_be_clickable(
+        #     (By.CSS_SELECTOR, '#sidebar-left > div > ul > li:nth-child(1) > a > span')))
+        # addnews.click()
+        # addnew = wait.until(EC.element_to_be_clickable(
+        #     (By.CSS_SELECTOR, '#sidebar-left > div > ul > li:nth-child(1) > ul > li:nth-child(1) > a > span')))
+        # addnew.click()
+        # publish = wait.until(EC.element_to_be_clickable(
+        #     (By.CSS_SELECTOR, '#content > div > div > div.box-content > div:nth-child(1) > div.span1 > a')))
+        # publish.click()
         # 新闻标题
         titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#content > div > div > div.box-content > form > fieldset > div:nth-child(1) > div > input')))
         titles.send_keys(newstitle)
@@ -1572,12 +1261,12 @@ def bk984g(dict,title,url, ac, ps, newstitle, game, source, content):
 def fpwapadmin(dict,title,url, ac, ps, newstitle, game, source, content):
     try:
         driver.switch_to_window(dict[title])
-
+        print('wearefp' + '\n' + "baidu94sbi" + '\n' + '请进行身份验证')
         driver.set_page_load_timeout(60)  # 60秒
         driver.get(url)
         handle = driver.current_window_handle
         driver.switch_to_window(handle)
-        print('wearefp' + '\n' + "baidu94sbi" + '\n' + '请进行身份验证' + '\n')
+
         while True:
             if driver.current_url == url:
                 break
@@ -1747,49 +1436,6 @@ def sjyx(dict,title,url, ac, ps, newstitle, game, source, content):
     except Exception:
         print(title + '出问题了，请记得回来手动操作')
         return None
-def bk87g(dict,title,url, ac, ps, newstitle, game, source, content):
-    try:
-        driver.switch_to_window(dict[title])
-
-        act = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#admin_username')))
-        act.clear()
-        psd = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, '#admin_password')))
-        psd.clear()
-        act.send_keys(ac)
-        psd.send_keys(ps)
-        print('请手动划动验证码登录，然后手动发布稿件后再按回车')
-        input('如果有视频请关闭视频再按回车，无的话直接按回车' + '\n')
-        # work = True
-        # while work == True:
-        #     if driver.current_url == 'http://cp.87g.com/index.php?m=cp&c=company':
-        #         break
-
-        # addnews = wait.until(EC.element_to_be_clickable(
-        #     (By.CSS_SELECTOR, '#sy_box > div:nth-child(2) > a')))
-        # addnews.click()
-
-        driver.switch_to_frame('test')
-        # 新闻标题
-        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#title')))
-        titles.send_keys(newstitle)
-        #选择游戏
-        games = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#game_name')))
-        games.click()
-        time.sleep(1)
-        choose = driver.find_element_by_xpath('//*[@id="ajaxgame"]')
-        choose.send_keys(game)
-        choosegam = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#searchgame')))
-        choosegam.click()
-        time.sleep(1)
-        choosegame = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#gg > li > a')))
-        choosegame.click()
-
-        # input('提交完按回车确认进入下一家' + '\n')
-    except Exception:
-        print(title + '出问题了，请记得回来手动操作')
-        return None
 def gk99(dict,title,url, ac, ps, newstitle, game, source, content):
     try:
         driver.switch_to_window(dict[title])
@@ -1808,16 +1454,19 @@ def gk99(dict,title,url, ac, ps, newstitle, game, source, content):
         while work == True:
             if driver.current_url == 'http://tg.gk99.com/':
                 break
+        time.sleep(1)
         addnew = driver.find_element_by_xpath('/html/body/div/div[2]/div[1]/div/ul/li[1]/dl/dd[1]/a')
         addnew.click()
         time.sleep(1)
         driver.switch_to_frame('view')
+        time.sleep(1)
         publish = wait.until(EC.element_to_be_clickable(
             (By.CSS_SELECTOR,
              'body > div.toolbar.layui-form > form > span.layui-btn-group > button:nth-child(1) > i')))
         publish.click()
         time.sleep(1)
         driver.switch_to_frame('layui-layer-iframe1')
+        time.sleep(1)
         # 新闻标题
         titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body > form > div.content-container > div.content-container-l > div.content-title > input')))
         titles.send_keys(newstitle)
@@ -1965,60 +1614,6 @@ def dunwan(dict,title,url, ac, ps, newstitle, game, source, content):
     except Exception:
         print(title + '出问题了，请记得回来手动操作')
         return None
-def gaoshouyou(dict,title,url, ac, ps, newstitle, game, source, content):
-    try:
-        driver.switch_to_window(dict[title])
-
-        act = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, 'body > div.login-box > form > fieldset > ul > li:nth-child(1) > div > input')))
-        act.clear()
-        psd = wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, 'body > div.login-box > form > fieldset > ul > li:nth-child(2) > div > input')))
-        psd.clear()
-        act.send_keys(ac)
-        psd.send_keys(ps)
-        while True:
-            try:
-                if EC.alert_is_present()(driver):
-                    driver.switch_to_alert().accept()
-                    continue
-                elif driver.current_url == 'http://www.gaoshouyou.com/cstougao':
-                    break
-            except UnexpectedAlertPresentException:
-                continue
-
-        while True:
-            if driver.current_url == 'http://www.gaoshouyou.com/cstougao':
-                break
-        addnews = wait.until(EC.element_to_be_clickable(
-            (By.CSS_SELECTOR, 'body > div.count > div.menu > div > ul > li:nth-child(1) > ul > li:nth-child(2) > a')))
-        addnews.click()
-        while True:
-            if driver.current_url == 'http://www.gaoshouyou.com/cstougao/add?type=5':
-                break
-        # 新闻标题
-        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body > div.count > div.wrap > div > div.box > form > ul > li:nth-child(2) > div > input')))
-        titles.send_keys(newstitle)
-        #短标题
-        ftitle = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'body > div.count > div.wrap > div > div.box > form > ul > li:nth-child(3) > div > input')))
-        ftitle.send_keys(game)
-        # 新闻内容
-        keys = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                            'body > div.count > div.wrap > div > div.box > form > ul > li:nth-child(5) > div > textarea')))
-        keys.send_keys(content)
-        # 绑定专区
-        bind = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
-                                                          'body > div.count > div.wrap > div > div.box > form > ul > li:nth-child(1) > div > input.form-text.form-text-tip-input')))
-        bind.clear()
-        bind.send_keys(game)
-        time.sleep(1)
-        choosegame = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
-                                                            'body > div.count > div.wrap > div > div.box > form > ul > li:nth-child(1) > div > div > ul')))
-        choosegame.click()
-        # input('提交完按回车确认进入下一家' + '\n')
-    except Exception:
-        print(title + '出问题了，请记得回来手动操作')
-        return None
 def bbsgqq(dict,title,url, ac, ps, newstitle, game, source, content):
     try:
         driver.switch_to_window(dict[title])
@@ -2050,6 +1645,7 @@ def bbsgqq(dict,title,url, ac, ps, newstitle, game, source, content):
         # titles.send_keys(newstitle)
         # input('提交完按回车确认进入下一家' + '\n')
     except Exception:
+        traceback.print_exc()
         print(title + '出问题了，请记得回来手动操作')
         return None
 def xskhome(dict,title,url, ac, ps, newstitle, game, source, content):
@@ -2156,7 +1752,426 @@ def woyoo(dict,title,url, ac, ps, newstitle, game, source, content):
     except Exception:
         print(title + '出问题了，请记得回来手动操作')
         return None
+#验证码
+def juxia(dict,title,url, ac, ps, newstitle, game, source, content):
+    try:
+        driver.switch_to_window(dict[title])
+        act = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#username')))
+        act.clear()
+        psd = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#password')))
+        psd.clear()
+        act.send_keys(ac)
+        psd.send_keys(ps)
+        work = True
+        s = driver.find_elements_by_css_selector('body > div.mainbody > div > form > dl > dd.tc > input')
+        while len(s) != 0 and work == True:
+            if driver.current_url != 'https://i.juxia.com/':
+                while len(s) != 0:
+                    act = wait.until(EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, '#username')))
+                    act.clear()
+                    psd = wait.until(EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, '#password')))
+                    psd.clear()
+                    act.send_keys(ac)
+                    psd.send_keys(ps)
 
+                    wait1 = WebDriverWait(driver, 6000)
+                    wait1.until(EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, '#href'))).click()
+                    time.sleep(1)
+                    break
+            else:
+                break
+            time.sleep(1)
+        addnews = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, 'body > div.mainbody > div.topnav > div > a:nth-child(6)')))
+        addnews.click()
+        #投放平台
+        addnew = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, '#formid > div > div.contribute > div:nth-child(1) > div:nth-child(1) > div > a:nth-child(3)')))
+        addnew.click()
+        # 新闻标题
+        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#title')))
+        titles.send_keys(newstitle)
+        # 新闻关键字
+        keys = driver.find_element_by_name("keyword")
+        keys.send_keys(game)
+        # input('提交完按回车确认进入下一家' + '\n')
+    except Exception:
+        print(title + '出问题了，请记得回来手动操作')
+        return None
+def bk4q5q(dict,title,url,ac,ps,newstitle,game,source,content):
+    try:
+        driver.switch_to_window(dict[title])
+
+        act = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#username')))
+        act.clear()
+        psd = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#password')))
+        psd.clear()
+        act.send_keys(ac)
+        psd.send_keys(ps)
+        while True:
+            if driver.current_url == 'http://admin.4q5q.com/company/index.html':
+                break
+        driver.get('http://admin.4q5q.com/company/newsAdd.html')
+        while True:
+            if driver.current_url == 'http://admin.4q5q.com/company/newsAdd.html':
+                break
+        # 新闻标题
+        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#artiletitle')))
+        titles.send_keys(newstitle)
+        #选择游戏类别
+        choosegame = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, '#content > div > div > div.t_middle > div:nth-child(3) > div:nth-child(1) > select > option:nth-child(4)')))
+        choosegame.click()
+        # #选择游戏名
+        # gamename = wait.until(EC.element_to_be_clickable(
+        #     (By.CSS_SELECTOR, '#ddlgameName_chzn > a > span')))
+        # gamename.click()
+        # name = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#ddlgameName_chzn > div > div > input[type="text"]')))
+        # name.clear()
+        # name.send_keys(game)
+        # time.sleep(1)
+        # sure = driver.find_element_by_xpath('//*[@id="ddlgameName_chzn_o_259"]')
+        # sure.click()
+        # 新闻内容
+        keys = driver.find_element_by_name("Zhaiyao")
+        keys.send_keys(content)
+        # input('提交完按回车确认进入下一家' + '\n')
+    except Exception:
+        print(title + '出问题了，请记得回来手动操作')
+        return None
+def vshouyou(dict,title,url, ac, ps, newstitle, game, source, content):
+    try:
+        driver.switch_to_window(dict[title])
+
+        act = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#username')))
+        act.clear()
+        psd = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#userpwd')))
+        psd.clear()
+        act.send_keys(ac)
+        psd.send_keys(ps)
+        while True:
+            try:
+                if EC.alert_is_present()(driver):
+                    driver.switch_to_alert().accept()
+                    continue
+                elif driver.current_url == 'http://www.vshouyou.com/':
+                    break
+            except UnexpectedAlertPresentException:
+                continue
+
+        addnews = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, '#topUserBox > span > a:nth-child(3)')))
+        addnews.click()
+        # 新闻标题
+        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#theme')))
+        titles.send_keys(newstitle)
+        #新闻栏目
+        news = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, '#typeStr > option:nth-child(3)')))
+        news.click()
+        # 新闻关键词
+        keys = driver.find_element_by_name("themeKey")
+        keys.send_keys(game)
+        # 新闻内容
+        newcontent = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#contentKey')))
+        newcontent.send_keys(content)
+        # input('提交完按回车确认进入下一家' + '\n')
+    except Exception:
+        print(title + '出问题了，请记得回来手动操作')
+        return None
+def bk1g31(dict,title,url, ac, ps, newstitle, game, source, content):
+    try:
+        driver.switch_to_window(dict[title])
+
+        act = driver.find_element_by_name('username')
+        psd = driver.find_element_by_name('password')
+        act.send_keys(ac)
+        psd.send_keys(ps)
+        while True:
+            if driver.current_url == 'http://bbs.1g31.com/':
+                break
+        driver.get('http://bbs.1g31.com/forum.php?mod=post&action=newthread&fid=56')
+        handle = driver.current_window_handle
+        driver.switch_to_window(handle)
+        while True:
+            if driver.current_url == 'http://bbs.1g31.com/forum.php?mod=post&action=newthread&fid=56':
+                break
+        time.sleep(1)
+        # 新闻标题
+        titles = driver.find_element_by_name('subject')
+        titles.send_keys(newstitle)
+        #选择新闻类别
+        addnews = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, '#postbox > div.pbt.cl > div.ftid')))
+        addnews.click()
+        addnew = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, '#typeid_ctrl_menu > ul > li:nth-child(2)')))
+        addnew.click()
+        # input('提交完按回车确认进入下一家' + '\n')
+    except Exception:
+        print(title + '出问题了，请记得回来手动操作')
+        return None
+def bk3987(dict,title,url, ac, ps, newstitle, game, source, content):
+    try:
+        driver.switch_to_window(dict[title])
+
+        act = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#phone')))
+        act.clear()
+        psd = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#password')))
+        psd.clear()
+        act.send_keys(ac)
+        psd.send_keys(ps)
+        while True:
+            if driver.current_url == 'https://open.3987.com/':
+                break
+
+        addnews = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, 'body > div.banner > div > div > a.wztj')))
+        addnews.click()
+        while True:
+            if driver.current_url == 'https://open.3987.com/article.html':
+                break
+        addnew = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, 'body > div.main.clearfix > div > div > div.m-1000.fr > div.sub_soft > div.soft_tit > a')))
+        addnew.click()
+        while True:
+            if driver.current_url == 'https://open.3987.com/fabu.html':
+                break
+        time.sleep(1)
+        #选择动态
+        activit = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'body > div.main.clearfix > div > div > div.m-1000.fr > div.fb_soft > div.soft_gui > ul > li:nth-child(1) > div > input[type="text"]:nth-child(1)')))
+        activit.click()
+        activity = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div.main.clearfix > div > div > div.m-1000.fr > div.fb_soft > div.soft_gui > ul > li:nth-child(1) > div > ul > li:nth-child(1)')))
+        activity.click()
+        # 新闻标题
+        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body > div.main.clearfix > div > div > div.m-1000.fr > div.fb_soft > div.soft_gui > ul > li:nth-child(3) > input')))
+        titles.send_keys(newstitle)
+        # input('提交完按回车确认进入下一家' + '\n')
+    except Exception:
+        print(title + '出问题了，请记得回来手动操作')
+        return None
+def bk8477(dict,title,url,ac,ps,newstitle,game,source,content):
+    try:
+        driver.switch_to_window(dict[title])
+
+        work = True
+        s = driver.find_elements_by_css_selector('body > div.content > form > div.form-actions > label > button')
+        while len(s) != 0 and work == True:
+            if 'http://119.23.135.10/index.php?m=admin&c=index&pc_hash' not in driver.current_url:
+                while len(s) != 0:
+                    act = wait.until(EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, 'body > div.content > form > div:nth-child(3) > div > input')))
+                    act.clear()
+                    psd = wait.until(EC.presence_of_element_located(
+                        (By.CSS_SELECTOR, 'body > div.content > form > div:nth-child(4) > div > input')))
+                    psd.clear()
+                    act.send_keys(ac)
+                    psd.send_keys(ps)
+                    wait1 = WebDriverWait(driver, 6000)
+                    wait1.until(EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, 'body > div > div.bottom > a'))).click()
+                    time.sleep(1)
+                    break
+            else:
+                break
+        while True:
+            if 'http://119.23.135.10/index.php?m=admin&c=index&pc_hash' in driver.current_url:
+                break
+        # 内容
+        con = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#_M4 > a')))
+        con.click()
+        #管理内容
+        massge = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#_MP822 > a')))
+        massge.click()
+        driver.switch_to_frame('center_frame')
+        #游戏攻略
+        time.sleep(1)
+        gong = driver.find_element_by_xpath('//*[@id="2"]/span/a[2]')
+        gong.click()
+        driver.switch_to.parent_frame()
+        driver.switch_to_frame('rightMain')
+        addnews = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, 'body > div.pad-10 > div.content-menu.ib-a.blue.line-x > a.add.fb > em')))
+        addnews.click()
+        handles = driver.window_handles
+        driver.switch_to_window(handles[-1])
+        # 新闻标题
+        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#title')))
+        titles.send_keys(newstitle)
+        # 新闻关键字
+        keys = driver.find_element_by_name("info[keywords]")
+        keys.send_keys(game)
+        # 新闻来源
+        keys = driver.find_element_by_name("info[copyfrom]")
+        keys.send_keys(source)
+        # 新闻内容
+        keys = driver.find_element_by_name("info[description]")
+        keys.send_keys(content)
+        # input('提交完按回车确认进入下一家' + '\n')
+    except Exception:
+        print(title + '出问题了，请记得回来手动操作')
+        return None
+def gametanzi(dict,title,url,ac,ps,newstitle,game,source,content):
+    try:
+        driver.switch_to_window(dict[title])
+
+        driver.set_page_load_timeout(60)  # 60秒
+        act = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#J_admin_name')))
+        act.clear()
+        psd = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#admin_pwd')))
+        psd.clear()
+        act.send_keys(ac)
+        psd.send_keys(ps)
+        while True:
+            if driver.current_url == 'http://www.gametanzi.com/Admin/Index/index.html':
+                break
+        contentnews = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, '#nav_wraper > ul > li:nth-child(4) > a > span.menu-text.normal')))
+        contentnews.click()
+        publish = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, '#nav_wraper > ul > li.open > ul > li > a > span')))
+        publish.click()
+        work = True
+        while work == True:
+            if '正在加载' not in driver.find_element_by_xpath('//*[@id="loading"]/span').text:
+                break
+        driver.switch_to_frame('appiframe-7Portal')
+        addnews = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'body > div.wrap.J_check_wrap > ul > li:nth-child(2) > a')))
+        addnews.click()
+        # 关联栏目
+        linkgame = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, '#myform > div.col-auto > div > table > tbody > tr:nth-child(2) > td > select > option:nth-child(1)')))
+        linkgame.click()
+        # 新闻标题
+        titles = driver.find_element_by_name('post[post_title]')
+        titles.send_keys(newstitle)
+        # 新闻关键词
+        keys = driver.find_element_by_name('post[post_keywords]')
+        keys.send_keys(game)
+        # 新闻来源
+        gamesoure = driver.find_element_by_name("post[post_source]")
+        gamesoure.send_keys(source)
+        # 新闻内容
+        keys = driver.find_element_by_name("post[post_excerpt]")
+        keys.send_keys(content)
+        # # 关联游戏
+        # time.sleep(1)
+        # gamess = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
+        #                                                     '#myform > div.col-auto > div > table > tbody > tr:nth-child(1) > td > span > input.textbox-text.validatebox-text.textbox-prompt')))
+        # gamess.send_keys(game)
+        # time.sleep(2)
+        # linkgame = wait.until(
+        #     EC.element_to_be_clickable((By.CSS_SELECTOR, '#datagrid-row-r2-2-266 > td:nth-child(2) > div')))
+        # linkgame.click()
+        # input('提交完按回车确认进入下一家' + '\n')
+    except Exception:
+        print(title + '出问题了，请记得回来手动操作')
+        return None
+def gaoshouyou(dict,title,url, ac, ps, newstitle, game, source, content):
+    try:
+        driver.switch_to_window(dict[title])
+
+        act = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, 'body > div.login-box > form > fieldset > ul > li:nth-child(1) > div > input')))
+        act.clear()
+        psd = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, 'body > div.login-box > form > fieldset > ul > li:nth-child(2) > div > input')))
+        psd.clear()
+        act.send_keys(ac)
+        psd.send_keys(ps)
+        while True:
+            try:
+                if EC.alert_is_present()(driver):
+                    driver.switch_to_alert().accept()
+                    continue
+                elif driver.current_url == 'http://www.gaoshouyou.com/cstougao':
+                    break
+            except UnexpectedAlertPresentException:
+                continue
+
+        while True:
+            if driver.current_url == 'http://www.gaoshouyou.com/cstougao':
+                break
+        addnews = wait.until(EC.element_to_be_clickable(
+            (By.CSS_SELECTOR, 'body > div.count > div.menu > div > ul > li:nth-child(1) > ul > li:nth-child(2) > a')))
+        addnews.click()
+        while True:
+            if driver.current_url == 'http://www.gaoshouyou.com/cstougao/add?type=5':
+                break
+        # 新闻标题
+        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'body > div.count > div.wrap > div > div.box > form > ul > li:nth-child(2) > div > input')))
+        titles.send_keys(newstitle)
+        #短标题
+        ftitle = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,'body > div.count > div.wrap > div > div.box > form > ul > li:nth-child(3) > div > input')))
+        ftitle.send_keys(game)
+        # 新闻内容
+        keys = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
+                                                            'body > div.count > div.wrap > div > div.box > form > ul > li:nth-child(5) > div > textarea')))
+        keys.send_keys(content)
+        # 绑定专区
+        bind = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
+                                                          'body > div.count > div.wrap > div > div.box > form > ul > li:nth-child(1) > div > input.form-text.form-text-tip-input')))
+        bind.clear()
+        bind.send_keys(game)
+        time.sleep(1)
+        choosegame = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
+                                                            'body > div.count > div.wrap > div > div.box > form > ul > li:nth-child(1) > div > div > ul')))
+        choosegame.click()
+        # input('提交完按回车确认进入下一家' + '\n')
+    except Exception:
+        print(title + '出问题了，请记得回来手动操作')
+        return None
+def bk87g(dict,title,url, ac, ps, newstitle, game, source, content):
+    try:
+        driver.switch_to_window(dict[title])
+
+        act = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#admin_username')))
+        act.clear()
+        psd = wait.until(EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#admin_password')))
+        psd.clear()
+        act.send_keys(ac)
+        psd.send_keys(ps)
+        print('请手动划动验证码登录，然后手动发布稿件,关闭帮助视频')
+        input('如果有视频请关闭视频再按回车，无的话直接按回车' + '\n')
+        while True:
+            if driver.current_url == 'http://cp.87g.com/index.php?m=cp&c=content&a=add':
+                break
+
+        driver.switch_to_frame('test')
+        # 新闻标题
+        titles = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#title')))
+        titles.send_keys(newstitle)
+        # #选择游戏
+        # games = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#game_name')))
+        # games.click()
+        # time.sleep(1)
+        # choose = driver.find_element_by_xpath('//*[@id="ajaxgame"]')
+        # choose.send_keys(game)
+        # choosegam = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#searchgame')))
+        # choosegam.click()
+        # time.sleep(1)
+        # choosegame = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#gg > li > a')))
+        # choosegame.click()
+
+        # input('提交完按回车确认进入下一家' + '\n')
+    except Exception:
+        print(title + '出问题了，请记得回来手动操作')
+        return None
 #页游后台
 def bk07073(dict,title,url,ac,ps,newstitle,game,source,content):
     try:
@@ -2225,7 +2240,7 @@ def main():
             print('进入手游特殊媒体...')
             for item in read_special_excel():
                 try:
-                    driver.set_page_load_timeout(10)  # 10秒
+                    driver.set_page_load_timeout(20)  # 20秒
                     js = 'window.open("' + item['url'] + '");'
                     driver.execute_script(js)
                     handles = driver.window_handles
@@ -2248,7 +2263,7 @@ def main():
             dict_part = {}
             for item in read_part_excel():
                 try:
-                    driver.set_page_load_timeout(10)  # 10秒
+                    driver.set_page_load_timeout(20)  # 20秒
                     js = 'window.open("' + item['url'] + '");'
                     driver.execute_script(js)
                     handles = driver.window_handles
@@ -2271,7 +2286,7 @@ def main():
             dict_web = {}
             for item in read_web_excel():
                 try:
-                    driver.set_page_load_timeout(10)  # 10秒
+                    driver.set_page_load_timeout(20)  # 20秒
                     js = 'window.open("' + item['url'] + '");'
                     driver.execute_script(js)
                     handles = driver.window_handles
